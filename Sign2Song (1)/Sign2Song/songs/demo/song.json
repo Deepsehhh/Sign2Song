@@ -1,0 +1,12 @@
+{
+  "title": "Sign2Song Demo Track",
+  "artist": "Built-in demo (original, synthesized)",
+  "audio": "demo.wav",
+  "lyrics": "demo.lrc",
+  "gestures": [
+    { "start": 0,  "gesture": "Open Palm" },
+    { "start": 12, "gesture": "Peace" },
+    { "start": 24, "gesture": "Fist" },
+    { "start": 36, "gesture": "Rock" }
+  ]
+}
