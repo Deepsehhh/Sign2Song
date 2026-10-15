@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign2Song - Gesture Rhythm Studio</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <!-- MediaPipe Hands (same CDN approach as the original project; needs internet on first load) -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <!-- Song selection -->
+  <div id="launcher">
+    <h1 class="logo">Sign2Song</h1>
+    <p class="tag">Copy the shadow hand. Keep the music alive.</p>
+    <input id="search" type="search" placeholder="Search songs..." autocomplete="off">
+    <div id="song-grid" class="song-grid"><p class="muted">Loading songs...</p></div>
+    <button id="launch-btn" class="btn primary big" disabled>Select a song</button>
+    <p id="launch-error" class="error"></p>
+  </div>
+
+  <div id="app" hidden>
+    <header class="topbar">
+      <span class="brand">SIGN2SONG</span>
+      <span id="top-title" class="top-title"></span>
+      <span id="badge-play" class="badge">READY</span>
+    </header>
+
+    <main class="layout">
+      <section class="left">
+        <div id="stage" class="stage idle">
+          <video id="webcam" playsinline muted hidden></video>
+          <canvas id="view"></canvas>
+          <div class="hud-acc">
+            <div id="acc-value" class="acc-value">0%</div>
+            <div class="acc-label">MATCH</div>
+            <div class="acc-bar"><div id="acc-fill" class="acc-fill"></div><div id="acc-thr" class="acc-thr"></div></div>
+          </div>
+          <div id="badge-match" class="badge-match">SHOW YOUR HAND</div>
+          <div class="hold-wrap"><div id="hold-fill" class="hold-fill"></div></div>
+          <div id="cam-msg" class="cam-msg">Starting camera...</div>
+        </div>
+
+        <div class="gesture-bar">
+          <div class="g-block">
+            <div class="g-label">TARGET GESTURE</div>
+            <div id="g-current" class="g-name">-</div>
+            <div id="g-time" class="g-sub"></div>
+          </div>
+          <div class="g-block next">
+            <canvas id="next-canvas" width="120" height="120"></canvas>
+            <div><div class="g-label">NEXT</div><div id="g-next" class="g-name small">-</div></div>
+          </div>
+          <div class="controls">
+            <button id="btn-practice" class="btn">Practice: off</button>
+            <button id="btn-prev" class="btn" hidden>&lsaquo;</button>
+            <button id="btn-nextg" class="btn" hidden>&rsaquo;</button>
+            <button id="btn-restart" class="btn">Restart</button>
+            <button id="btn-back" class="btn">Songs</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right">
+        <div class="now">
+          <div id="cover" class="cover"></div>
+          <div class="now-meta"><div id="np-title" class="np-title"></div><div id="np-artist" class="np-artist"></div></div>
+        </div>
+        <div class="progress" id="progress"><div id="progress-fill"></div></div>
+        <div class="times"><span id="t-cur">0:00</span><span id="t-dur">0:00</span></div>
+        <div id="lyrics" class="lyrics"></div>
+
+        <details class="panel">
+          <summary>Settings</summary>
+          <label>Match threshold <b id="v-thr"></b>%<input id="s-thr" type="range" min="60" max="98" step="1"></label>
+          <label>Hold time <b id="v-hold"></b> ms<input id="s-hold" type="range" min="200" max="1500" step="50"></label>
+          <label>Grace before pause <b id="v-grace"></b> ms<input id="s-grace" type="range" min="200" max="2000" step="50"></label>
+          <label>Change-over grace <b id="v-seg"></b> ms<input id="s-seg" type="range" min="0" max="4000" step="100"></label>
+        </details>
+
+        <details class="panel">
+          <summary>Template studio (record your own target poses)</summary>
+          <p class="muted">Hold the pose in front of the camera, pick the gesture name, press Capture. The pose is averaged over ~0.7 s and saved to <code>data/gesture_templates.json</code>.</p>
+          <div class="row">
+            <select id="cap-name"></select>
+            <input id="cap-custom" placeholder="or new name">
+          </div>
+          <div class="row">
+            <button id="cap-btn" class="btn primary">Capture</button>
+            <button id="cap-reset" class="btn">Reset to default</button>
+          </div>
+          <p id="cap-status" class="muted"></p>
+        </details>
+      </aside>
+    </main>
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <script src="{{ url_for('static', filename='gesture_math.js') }}"></script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
