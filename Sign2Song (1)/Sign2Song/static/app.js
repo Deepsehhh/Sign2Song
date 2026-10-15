@@ -307,6 +307,11 @@
     audio.addEventListener('ended', () => { S.ended = true; Player.desired = false; });
     audio.addEventListener('seeked', () => { if (audio.currentTime < audio.duration - 0.1) S.ended = false; });
     S.audio = audio; S.segments = null;
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const gainNode = ctx.createGain();
+    gainNode.gain.value = 3;   // 3 = about 3x louder, change as needed
+    ctx.createMediaElementSource(audio).connect(gainNode).connect(ctx.destination);
+    audio.addEventListener('play', () => ctx.resume());
     S.lyrics = [];
     if (song.lyrics_url) { try { const r = await fetch(song.lyrics_url); if (!r.ok) throw 0; S.lyrics = parseLRC(await r.text());
       if (!S.lyrics.length) toast('Lyrics file has no timestamps ([mm:ss.xx] lines).'); } catch (e) { toast('Could not load lyrics file.'); } }
